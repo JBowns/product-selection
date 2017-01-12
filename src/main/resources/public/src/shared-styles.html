@@ -1,0 +1,67 @@
+<dom-module id="shared-styles">
+  <template>
+    <style>
+    @media (min-width: 800px) {
+        .container {
+            @apply(--layout-horizontal);
+            @apply(--layout-justified);
+            margin: 15px;
+        }
+    }
+    .card {
+        box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
+        padding: 16px;
+        margin: 20px;
+        border-radius: 5px;
+        background-color: #fff;
+        color: #757575;
+        min-width: 250px;
+    }
+    .card h1 {
+        margin: 5px;
+    }
+    paper-button {
+    	display: inline-flex;
+        bottom: 0px;
+    	width: 100%;
+    	margin: 5px;
+        color: #FFFFFF;
+        --paper-button-raised-keyboard-focus: {
+          color: #FFFFFF !important;
+        };
+    }
+    paper-button.blue {
+    	background-color: #4a89dc;
+        --paper-button-raised-keyboard-focus: {
+          background-color: #357bd8 !important;
+        };
+    }
+    paper-button.blue[disabled] {
+    	color: #575758;
+    	background-color: #a0a3a7;
+        --paper-button-raised-keyboard-focus: {
+          background-color: #93969a !important;
+        };
+    }
+    paper-button.blue:hover {
+    	background-color: #357bd8;
+    }
+    paper-button.grey {
+		background-color: #757575;
+	    --paper-button-raised-keyboard-focus: {
+	      background-color: #4a4a4a !important;
+	    };
+	}
+	paper-button.grey[disabled] {
+		background-color: #444444;
+	    --paper-button-raised-keyboard-focus: {
+	      background-color: #323232 !important;
+	    };
+	}
+
+	paper-button.grey:hover {
+    	background-color: #4a4a4a;
+		}
+    </style>
+  </template>
+</dom-module>

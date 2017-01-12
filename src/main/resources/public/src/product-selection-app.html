@@ -1,0 +1,125 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="../bower_components/app-layout/app-header-layout/app-header-layout.html">
+<link rel="import" href="../bower_components/app-layout/app-toolbar/app-toolbar.html">
+<link rel="import" href="../bower_components/app-route/app-location.html">
+<link rel="import" href="../bower_components/app-route/app-route.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../bower_components/iron-selector/iron-selector.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+
+<dom-module id="product-selection-app">
+    <template>
+    <style>
+      :host {
+        --app-primary-color: #4285f4;
+        --app-secondary-color: black;
+
+        display: block;
+      }
+
+      app-header {
+        color: #fff;
+        background-color: var(--app-primary-color);
+      }
+
+      app-header paper-icon-button {
+        --paper-icon-button-ink-color: white;
+      }
+
+      paper-input {
+        width: 125px;
+        margin-bottom: 30px;
+        --paper-input-container-input-color: #FFFFFF;
+        --paper-input-container-color: #FFFFFF;
+        --paper-input-container-underline-focus: {
+            border-color: #FFFFFF;
+        }
+      }
+
+    </style>
+
+    <app-location route="{{route}}"></app-location>
+    <app-route route="{{route}}" pattern="/:page" data="{{routeData}}"></app-route>
+
+    <app-header-layout>
+        <app-header>
+            <app-toolbar>
+                <div main-title>Unattended Programming Test</div>
+                <paper-input label="" placeholder="Customer ID" value="{{customerID}}"></paper-input>
+                <paper-icon-button icon="icons:refresh" on-click="_onRefresh"></paper-icon-button>
+            </app-toolbar>
+        </app-header>
+        <iron-pages selected="{{page}}" attr-for-selected="name">
+            <product-selection-page id="selectionPage" name="selection" on-checkout="_onCheckout"></product-selection-page>
+            <product-confirmation-page id="confirmationPage" name="confirmation" on-cancel="_onCancelCheckout"></product-confirmation-page>
+        </iron-pages>
+
+    </app-header-layout>
+
+  </template>
+
+    <script>
+        Polymer({
+            is: 'product-selection-app',
+
+            properties: {
+                page: {
+                    type: String,
+                    observer: '_pageChanged',
+                },
+                customerID: {
+                    type: String,
+                    value: "LIV_CUST_93642",
+                    notify: true
+                }
+            },
+
+            observers: [
+                '_routePageChanged(routeData.page)',
+                '_customerIDChanged(customerID)'
+            ],
+
+            _routePageChanged: function(page) {
+                if (page) {
+                    this.page = page;
+                } else {
+                    this._setDefaultPage();
+                }
+            },
+            _customerIDChanged: function(customerID) {
+                document.cookie = "customerID=" + customerID + "; path=/";
+            },
+            _setDefaultPage: function() {
+                this.page = 'selection';
+            },
+            _pageChanged: function(page) {
+                var resolvedPageUrl = this.resolveUrl('product-' + page + '-page.html');
+                this.importHref(resolvedPageUrl, null, this._setDefaultPage, true);
+            },
+            _onRefresh: function(e) {
+                this.$.selectionPage.refreshProducts();
+            },
+            _onCheckout: function(event) {
+                this.page = "confirmation";
+                this.$.confirmationPage.products = event.detail;
+            },
+            _onCancelCheckout: function(event) {
+                this._setDefaultPage();
+            },
+        });
+    </script>
+</dom-module>

@@ -1,0 +1,53 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="product-confirmation-page">
+
+    <template>
+        <style include="shared-styles"></style>
+
+        <iron-ajax id="checkoutAjax" url="/api/v1/checkout" method="POST" handle-as="json"></iron-ajax>
+
+        <div class="card">
+            <h1>Confirmation Page</h1>
+            <p>Please confirm the following products are correct before proceeding:</p>
+            <template is="dom-repeat" items="[[products]]" as="product">
+                <h4>[[product.name]]</h4>
+            </template>
+            <paper-button class="blue" raised on-click="_onProceed">Proceed</paper-button>
+            <paper-button class="grey" raised on-click="_onCancel">Cancel</paper-button>
+        </div>
+    </template>
+
+    <script>
+        Polymer({
+            is: 'product-confirmation-page',
+            properties: {
+                products: {
+                    type: Array
+                }
+            },            
+            _onProceed: function(e) {
+                this.$.checkoutAjax.contentType = 'application/json';
+                this.$.checkoutAjax.body = JSON.stringify(this.products);
+                this.$.checkoutAjax.generateRequest();
+            },
+            _onCancel: function(e) {
+                this.fire('cancel', {});
+            }
+        });
+    </script>
+
+</dom-module>

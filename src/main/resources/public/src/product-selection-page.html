@@ -1,0 +1,71 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+
+<link rel="import" href="catalogue-product-view.html">
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="product-selection-page">
+    <template>
+        <style include="shared-styles"></style>
+
+        <iron-ajax id="productsAjax" url="/api/v1/products" method="GET" handle-as="json" last-response="{{products}}" auto></iron-ajax>
+
+        <div class="container">
+            <catalogue-product-view catalogues$="[[_groupProductsByCategory(products)]]" selected-products="{{selectedProducts}}"></catalogue-product-view>
+            <div class="card">
+                <h1>Basket</h1>
+                <template is="dom-if" if$="[[!renderedItemCount]]">
+                    <p>Your basket is empty</p>
+                </template>
+                <template id="repeat" is="dom-repeat" items="[[selectedProducts]]" as="product" rendered-item-count="{{renderedItemCount}}">
+                    <p>- [[product.name]]</p>
+                </template>
+                <paper-button class="blue" toggles raised disabled$="[[!renderedItemCount]]" on-click="_onCheckout">Checkout</paper-button>
+            </div>
+        </div>
+    </template>
+
+    <script>
+        Polymer({
+            is: 'product-selection-page',
+
+            refreshProducts: function() {
+                this.$.productsAjax.generateRequest();
+            },
+            _groupProductsByCategory: function(products) {
+                var tmp = {};
+                var catalogues = [];
+                if (products) {
+                    for (var i = 0; i < products.length; i++) {
+                        if (!tmp[products[i].category.name]) {
+                            tmp[products[i].category.name] = [];
+                        }
+                        tmp[products[i].category.name].push(products[i]);
+                    }
+                    var keys = Object.keys(tmp);
+                    for (var i = 0; i < keys.length; i++) {
+                        catalogues.push({
+                            name: keys[i],
+                            products: tmp[keys[i]]
+                        });
+                    }
+                }
+                return catalogues;
+            },
+            _onCheckout: function() {
+                this.fire('checkout', this.selectedProducts);
+            },
+        });
+    </script>
+</dom-module>
