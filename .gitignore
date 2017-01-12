@@ -1,0 +1,6 @@
+*.iml
+.idea/
+target/
+src/main/resources/public/bower_components/
+src/main/resources/public/node_modules/
+src/main/resources/public/build/
